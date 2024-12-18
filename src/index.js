@@ -1,38 +1,36 @@
 import connectDB from "./db/index.js";
 import dotenv from "dotenv";
+import { app } from "./app.js";
+import { uploadOnCloudinary } from "./utils/cloudinary.js";
 
 dotenv.config({
-  path: "./env", 
+  path: "./env",
 });
 
 connectDB()
-.then(() => {
-    application.listen(process.env.PORT || 8000, () => {
-        console.log(`server is runnign at port ${process.env.PORT || 8000}`);
-    })
-}
-).catch((error) => {
-    console.log("MONGO db connection failed !!!" , err)
-})
+  .then(async () => {
+    console.log("MongoDB Connected!");
 
+    // Test Cloudinary upload
+    const testFileURL = "https://res.cloudinary.com/djh3von8g/image/upload/v1734531748/cld-sample-5.jpg";
+    const uploadResponse = await uploadOnCloudinary(testFileURL);
 
-/*
-;( async ()=>{
-    try{
-        await mongoose.connect(`${process.env.MONGODB_URI}
-            /${DB_NAME}`)
-        app.on("error" , (error) => {
-            console.log("ERROR: ",error);
-            throw error
-        })
-
-        app.listen(process.env.PORT, () => {
-            console.log(`App is listening on port ${process.env.PORT}`)
-        })
-        
-    }catch (error){
-        console.error("ERROR: ", error)
-        throw error
+    if (uploadResponse) {
+      console.log("Cloudinary Upload Successful:", uploadResponse);
+    } else {
+      console.log("Cloudinary Upload Failed.");
     }
-})()
-*/
+
+    // Setup a basic route
+    app.get("/", (req, res) => {
+      res.send("Server running");
+    });
+
+    // Start the server
+    app.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running at port ${process.env.PORT || 8000}`);
+    });
+  })
+  .catch((error) => {
+    console.log("MongoDB connection failed!!!", error);
+  });
