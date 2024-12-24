@@ -12,14 +12,13 @@ connectDB()
     console.log("MongoDB Connected!");
 
     // Test Cloudinary upload
-    const testFileURL = "https://res.cloudinary.com/djh3von8g/image/upload/v1734531748/cld-sample-5.jpg";
-    const uploadResponse = await uploadOnCloudinary(testFileURL);
-
-    if (uploadResponse) {
-      console.log("Cloudinary Upload Successful:", uploadResponse);
-    } else {
-      console.log("Cloudinary Upload Failed.");
-    }
+    // const testFileURL = "https://res.cloudinary.com/djh3von8g/image/upload/v1734531748/cld-sample-5.jpg";
+    // const uploadResponse = await uploadOnCloudinary(testFileURL);
+    // if (uploadResponse) {
+    //   console.log("Cloudinary Upload Successful:", uploadResponse);
+    // } else {
+    //   console.log("Cloudinary Upload Failed.");
+    // }
 
     // Setup a basic route
     app.get("/", (req, res) => {
