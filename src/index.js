@@ -4,7 +4,7 @@ import { app } from "./app.js";
 import { uploadOnCloudinary } from "./utils/cloudinary.js";
 
 dotenv.config({
-  path: "./env",
+  path: "./.env",
 });
 
 connectDB()
