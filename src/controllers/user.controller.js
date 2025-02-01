@@ -39,7 +39,8 @@ const registerUser = asyncHandler(async (req,res) => {
     // console.log(req.body);
     
     const {fullName, email ,username, password} = req.body;
-    // console.log(req.body); 
+
+    console.log(req.body); 
 
     // if(fullName === ""){
     //     throw new ApiError(400, "Fullname is required")
@@ -106,17 +107,14 @@ const registerUser = asyncHandler(async (req,res) => {
 
 })
 
-const loginUser = asyncHandler(async (req,res) =>{
-  //get data from req->data
-  //login using email or username
-  //check passd 
-  //if correct return access token and refresh token
-  //send cookie
+const loginUser = asyncHandler(async (req,res) => {
+    
+  const {email ,username, password} = req.body;
 
-  const {email, username, password} = req.body
-  
-  if(! username && !email){
-    throw new ApiError(400, "username of email is required")
+  console.log("req : " + req); 
+  if(!email && !username){
+
+    throw new ApiError(400, "username or email is required")
   }
 
   const myuser = await User.findOne(
@@ -124,13 +122,13 @@ const loginUser = asyncHandler(async (req,res) =>{
       $or :[{username} , {email}]
     }
   )
-
+  console.log("here isthe user : " + myuser)
   if(!myuser){
-    console.log("hand")
+    // console.log("hand")
     throw new ApiError(404, "User does not exist")
   }
 
-  const isPasswordValid= await myuser.isPasswordCorrect(password)
+  const isPasswordValid = await myuser.isPasswordCorrect(password)
 
   if(!isPasswordValid){
     throw new ApiError(401,"Invalid user credintials")
@@ -351,6 +349,63 @@ const updateUserCoverImage = asyncHandler(async(req, res)=>{
 
 })
 
+const getUserChannelProfile = asyncHandler(async(req,res) => {
+  const {username} = req.params
+
+  if(!username ?. trim()) {
+    throw new ApiError(400, "Username is missing") 
+  }
+
+  const channel = await User.aggregate([
+    {
+      $match : {
+        username : username ?.toLowerCase()
+      }
+    },
+    {
+      $lookup : {
+        from : "subscriptions",
+        localFeild : "_id",
+        foreignFeild : "channel",
+        as : "subscribers"
+      }
+    },
+    {
+      from : "subscriptinons",
+      localFeild : "_id",
+      foreignFeild : "subscriber",
+      as : "subscribedTo"
+    },
+    {
+      $addFields : {
+        subscribersCount : {
+          $size : "$subscribers"
+        },
+        channelsSubscribedToCount : {
+          $size : "$subscribedTo"
+        },
+        isSubscribed : {
+          $cond : {
+            if : {$in : [req.user ?. _id , "subscribers.subscriber"]},
+            then : true,
+            else : false
+          }
+        }
+      }
+    },
+    {
+      $project :{
+        fullName :1,
+        username : 1,
+        subscribersCount : 1,
+        isSubscribed : 1,
+        avatar : 1,
+        coverImage : 1,
+        email :1
+      }
+    }
+  ])
+})
 
 export {
   registerUser,
