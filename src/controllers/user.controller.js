@@ -40,7 +40,9 @@ const registerUser = asyncHandler(async (req,res) => {
     
     const {fullName, email ,username, password} = req.body;
 
-    console.log(req.body); 
+    // console.log("req : ")
+
+    // console.log(req.body); 
 
     // if(fullName === ""){
     //     throw new ApiError(400, "Fullname is required")
@@ -110,8 +112,9 @@ const registerUser = asyncHandler(async (req,res) => {
 const loginUser = asyncHandler(async (req,res) => {
     
   const {email ,username, password} = req.body;
-
-  console.log("req : " + req); 
+  // console.log("req : ")
+  // console.log(req.body); 
+  
   if(!email && !username){
 
     throw new ApiError(400, "username or email is required")
@@ -122,11 +125,13 @@ const loginUser = asyncHandler(async (req,res) => {
       $or :[{username} , {email}]
     }
   )
-  console.log("here isthe user : " + myuser)
+  // console.log("here isthe user : " + myuser)
   if(!myuser){
     // console.log("hand")
     throw new ApiError(404, "User does not exist")
   }
+  // console.log(myuser)
+  // console.log(password)
 
   const isPasswordValid = await myuser.isPasswordCorrect(password)
 
@@ -141,7 +146,7 @@ const loginUser = asyncHandler(async (req,res) => {
   //sending cookeis
 
   const options = {
-    httpOny : true,
+    httpOnly : true,
     secure : true,
   }
 
